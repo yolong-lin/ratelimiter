@@ -30,15 +30,14 @@ import (
 
 func main() {
 	r := gin.Default()
-	r.Use(ratelimiter.New(ratelimiter.Config{
-		TimeWindow:    time.Hour,
-		RequestQuota:  1000,
-		RedisIP:       "localhost",
-		RedisPort:     "6379",
-		RedisUsername: "default",
-		RedisPassword: "",
-		RedisDB:       0,
-	}))
+
+    store := ratelimiter.NewRedisStore("localhost:6379", "default", "", 0)
+	config := ratelimiter.Config{
+	    TimeWindow:   time.Hour,
+	    RequestQuota: 1000,
+	}
+
+    r.Use(ratelimiter.New(config, store))
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
