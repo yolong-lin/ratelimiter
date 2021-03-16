@@ -3,7 +3,6 @@ package ratelimiter
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -28,8 +27,8 @@ type rateLimiter struct {
 	keyPrefix string
 }
 
-func (r *rateLimiter) setHeader(c *gin.Context, val int, ttl float64) {
-	c.Header("X-RateLimit-Reset", strconv.FormatInt(int64(ttl), 10))
+func (r *rateLimiter) setHeader(c *gin.Context, val, ttl int) {
+	c.Header("X-RateLimit-Reset", fmt.Sprint(ttl))
 	if val > r.requestQuota {
 		c.Header("X-RateLimit-Remaining", "0")
 		c.AbortWithStatus(http.StatusTooManyRequests)
