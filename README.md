@@ -35,6 +35,7 @@ func main() {
 	config := ratelimiter.Config{
 		TimeWindow:   time.Hour,
 		RequestQuota: 1000,
+		KeyPrefix:    "ratelimiter",
 	}
 
 	r.Use(ratelimiter.New(config, store))
