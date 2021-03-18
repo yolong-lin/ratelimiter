@@ -1,0 +1,14 @@
+version: "3.8"
+
+services: 
+  gin:
+    build: .
+    image: "gin-ratelimiter-example"
+    volumes:
+      - ${PWD}/main.go:/code/main.go
+    ports:
+      - 8080:8080
+  redis:
+    image: "redis:alpine"
+    ports:
+      - 6379:6379

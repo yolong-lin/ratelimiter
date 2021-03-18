@@ -1,24 +1,3 @@
-# RateLimiter
-
-Gin middleware to restrict request rate.
-
-## Usage
-
-Install it:
-
-```bash
-go get github.com/yolong-lin/ratelimiter
-```
-
-import it:
-
-```go
-import "github.com/yolong-lin/ratelimiter"
-```
-
-## [Example](example)
-
-```go
 package main
 
 import (
@@ -31,11 +10,11 @@ import (
 func main() {
 	r := gin.Default()
 
-	store := ratelimiter.NewRedisStore("localhost:6379", "default", "", 0)
+	store := ratelimiter.NewRedisStore("redis:6379", "default", "", 0)
 	config := ratelimiter.Config{
 		TimeWindow:   time.Hour,
 		RequestQuota: 1000,
-		KeyPrefix:    "ratelimiter",
+		KeyPrefix:    "rl",
 	}
 
 	r.Use(ratelimiter.New(config, store))
@@ -48,5 +27,3 @@ func main() {
 
 	r.Run()
 }
-```
-
