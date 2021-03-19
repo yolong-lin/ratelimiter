@@ -6,7 +6,7 @@ Gin middleware to restrict request rate.
 
 Install it:
 
-```bash
+```shell
 go get github.com/yolong-lin/ratelimiter
 ```
 
