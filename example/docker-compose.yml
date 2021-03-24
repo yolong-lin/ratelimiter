@@ -3,12 +3,14 @@ version: "3.8"
 services: 
   gin:
     build: .
-    image: "gin-ratelimiter-example"
+    image: "ratelimiter-yolong"
+    container_name: "gin_yolong"
     volumes:
       - ${PWD}/main.go:/code/main.go
     ports:
       - 8080:8080
   redis:
     image: "redis:alpine"
+    container_name: "redis_yolong"
     ports:
       - 6379:6379

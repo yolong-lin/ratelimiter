@@ -1,52 +1,27 @@
 # RateLimiter
 
-Gin middleware to restrict request rate.
+Dcard Backend Intern 作業。
 
-## Usage
+### 題目: 
 
-Install it:
+- 設計一個 middleware 限制每小時來自同一 IP 的請求數量不超過 1000
+- 要在 response header 中加入剩餘的請求數量 (X-RateLimit-Remaining) 和 rate limit 歸零的時間(X-RateLimit-Reset)
+- 超過限制要回傳 429 (Too Many Requests)
 
-```shell
-go get github.com/yolong-lin/ratelimiter
-```
+### 想法
 
-import it:
+使用 Go 的 Gin 框架配合 Redis 資料庫，實做下面的演算法:
 
-```go
-import "github.com/yolong-lin/ratelimiter"
-```
+- 檢查 IP 是否已被紀錄
+  - 如果 IP 還沒紀錄過，將 IP 紀錄下來，把值設定成 1，並設定 TTL。 (SETNX)
+  - 如果 IP 已經紀錄過，把它的值加 1。(INCR)
+- 取得該 IP 的值、還剩多久時間到期。(TTL)
 
-## [Example](example)
+另外，對 Redis 的操作是利用 Lua script，這是為了避免 Redis 在進行 Incr 的前一刻，key 突然過期，而導致 key 沒有被設置 Expiration time。
 
-```go
-package main
+考量到在不同的 Route 底下可能會需要不同的 Ratelimiter，所以提供了一個 `Keyprefix` 的選項，以區別相同 IP 在不同 Route 的 key。
 
-import (
-	"time"
+### 範例
 
-	"github.com/gin-gonic/gin"
-	"github.com/yolong-lin/ratelimiter"
-)
-
-func main() {
-	r := gin.Default()
-
-	store := ratelimiter.NewRedisStore("localhost:6379", "default", "", 0)
-	config := ratelimiter.Config{
-		TimeWindow:   time.Hour,
-		RequestQuota: 1000,
-		KeyPrefix:    "ratelimiter",
-	}
-
-	r.Use(ratelimiter.New(config, store))
-
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-
-	r.Run()
-}
-```
+參考 [example](example)。
 
